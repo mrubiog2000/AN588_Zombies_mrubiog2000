@@ -1,6 +1,8 @@
 ---
 title: "mrubiog2000_OriginalHomeworkCode_03"
 output: html_document
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r setup, include=FALSE}
@@ -65,6 +67,53 @@ QUESTION 2
 
 ```{r}
 
+library(ggplot2)
+library(gridExtra) #Package that allows drawing multiple ggplot plots
+
+weight_plot <- ggplot(data = d, aes(x = gender, y = weight)) + geom_boxplot()
+height_plot <- ggplot(data = d, aes(x = gender, y = height)) + geom_boxplot()
+zombies_plot <- ggplot(data = d, aes(x = gender, y = zombies_killed)) + geom_boxplot()
+yearsedu_plot <- ggplot(data = d, aes(x = gender, y = years_of_education)) + geom_boxplot()
+age_plot <- ggplot(data = d, aes(x = gender, y = age)) + geom_boxplot()
+
+#Boxplots with gender (x axis) and quantitative variables (y axis)
+
+grid.arrange(weight_plot, height_plot, zombies_plot, yearsedu_plot, age_plot, ncol=3)
+
+#function used to draw multiple plots ("par()" function did not work).
+
+```
+
+```{r}
+#This is an idea I tried first but did not work. Anyways, I think the structure may be useful (selecting only "female" and "male" data from the data frame).
+
+fem <- d[grep("^[Female]", d$gender), ] 
+male <- d[grep("^[Male]", d$gender), ] 
+
+
+#I have selected and separated from the data frame "d" the individuals whose gender is "female" and "male". I tried at first without the "^" but it did not work so I wrote it although I do not know what does it exactly do.
+```
+
+QUESTION 3
+
+```{r}
+
+age_height_plot <- ggplot(data = d, aes(x = age, y = height), color = cyl) + geom_point()
+
+age_weight_plot <- ggplot(data = d, aes(x = age, y = weight), color = cyl) + geom_point()
+
+grid.arrange(age_height_plot, age_weight_plot, ncol = 2)
+
+#These variables (age-height, age-weight) might be related in a proportional way (they in/decrease at the same time), but in the age-weight plot there is more dispersion. Anyways, I do not know if there is a way to calculate "R^2" in R
+
+```
+
+QUESTION 4 
+
+```{r}
+
 
 
 ```
+
+
