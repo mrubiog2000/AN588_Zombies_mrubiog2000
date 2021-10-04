@@ -9,26 +9,6 @@ editor_options:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
-
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
-```
-
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
-
 
 ```{r}
 library(curl)
@@ -47,7 +27,7 @@ summary(d) #With "summary()" I can see the mean of every quantitative value from
 
 attach(d) #Used to be able to call the variables from the data frame.
 names(d) #To see the names of the columns (variables) I need to work with.
-mean(age) #Another way to do it If wanted to see the mean from a specific column (variable).
+mean(height) #Another way to do it If wanted to see the mean from a specific column (variable).
 
 ssq <- function(x) {sum((x-mean(x))^2)} #Function to calculate the sum of squares.
 pop_var <- function(x) {ssq(x)/length(x)} #Function to calculate the variance of the population (note it is divided by "n" instead of by "n-1")
@@ -111,9 +91,90 @@ grid.arrange(age_height_plot, age_weight_plot, ncol = 2)
 QUESTION 4 
 
 ```{r}
+par(mfrow=c(2,5)) #Used to draw all the plots at the same time (in 2 rows and 5 columns)
 
+hist(d$height, breaks = seq(from = 54, to = 81, by = 1), col = "light green", main = "Height")
+hist(d$weight, col = "light green", main = "weight")
+hist(d$zombies_killed, col = "red", main = "Zombies killed")
+hist(d$years_of_education, col = "light blue", main = "Years of education")
+hist(d$age, col = "light blue", main = "Age")
 
+#Histograms of each quantitative variable
+
+qqnorm(d$height, main = "Height Q-Q")
+qqline(d$height, col = "red")
+
+qqnorm(d$weight, main = "Weight Q-Q")
+qqline(d$weight, col = "red")
+
+qqnorm(d$zombies_killed, main = "Zombies killed Q-Q")
+qqline(d$zombies_killed, col = "red")
+
+qqnorm(d$years_of_education, main = "Years of education Q-Q")
+qqline(d$years_of_education, col = "red")
+
+qqnorm(d$age, main = "Age Q-Q")
+qqline(d$age, col = "red")
+
+#Q-Q plot of each quantitative variable
+
+#I would say that the distributions of "Zombies killed" and "Years of education" are not normal because the data in the Q-Q plot does not match with the line. The shape of their distribution matches with the Poisson distribution (and it seems logic because they are discrete variables that are counted)
 
 ```
 
+QUESTION 5
+
+```{r}
+library(dplyr)
+
+set.seed(1) #Used to return the same set of random numbers every time I run the code.
+sam1 <- sample_n(d, 30, replace = FALSE) #"Sample_n" function from "dplyr" package allow to randomly select samples from a data frame. I tried to use the "Sample" but id did not work.
+sam1
+
+summary(sam1) #To see the mean.
+mean(sam1$height) #Another way to calculate the mean directly.
+mean(sam1$weight)
+mean(sam1$zombies_killed)
+mean(sam1$years_of_education)
+mean(sam1$age)
+
+sd(sam1$height)
+sd(sam1$weight)
+sd(sam1$zombies_killed)
+sd(sam1$years_of_education)
+sd(sam1$age)
+
+#Standard Deviations. I think this time we can use the "sd()" function because we are studying a sample. In QUESTION 1 I think we could not because we were studying the whole population.
+
+se <- function(x) {sd(x)/sqrt(length(x))} #Function to calculate the standard error.
+se(sam1$height)
+se(sam1$weight)
+se(sam1$zombies_killed)
+se(sam1$years_of_education)
+se(sam1$age)
+
+quantile(sam1$height, c(0.025, 0.975)) 
+quantile(sam1$weight, c(0.025, 0.975))
+quantile(sam1$age, c(0.025, 0.975)) 
+
+#CI for variables that follow the normal distribution.
+
+IC_Poisson <- function(x) {
+  upper = mean(x) + 1.96 * sqrt(mean(x)/length(x))
+  lower = mean(x) - 2.58 * sqrt(mean(x)/length(x))
+  ci <- c(lower, upper)
+  return(ci)
+  }
+
+#Function to calculate the IC for a variable that follows Poisson's distribution.
+  
+  #mean(x) = lambda from Poisson's distribution.
+  #This IC can be calculated by multiplying the standard error "sqrt(mean(x)/lenght(x))" by "z*(α/2)" which is 1.96 or 2.58 (I do not understand where these numbers comes from, but when I googled it those were the ones that always appeared).
+
+IC_Poisson(sam1$zombies_killed)
+IC_Poisson(sam1$years_of_education)
+
+#CI for variables that follow the Poisson's distribution.
+
+```
 
