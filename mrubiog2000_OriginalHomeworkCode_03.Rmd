@@ -182,6 +182,21 @@ QUESTION 6
 
 ```{r}
 
+lol <- NULL
+set.seed(1)
+for (i in 1:99) {lol[[i]] <- sample_n(d, size = 30, replace = TRUE)}
+
+#for loop to create 99 samples of 30 individuals (zombie survivors).
+#Replace = TRUE because if FALSE we do not have enough individuals for 99 samples of 30.
+
+```
+
+```{r}
+
+#I have not been able to calculate the mean of the quantitative variables from the 99 for loop: I do not know how to just do the mean of the variables I want, because the "$" option did not work. I also try to include the mean calculation within the for loop but it did not work either. The book and google did not help either.
+
+#The only think that worked was doing a 99 for loop sampling of each quantitative variable. However, I could not find a way to calculate the mean of each of the 99 subsets.
+
 library(dplyr)
 
 h <- NULL
@@ -203,9 +218,11 @@ mean(z[[1]])
 mean(y[[1]])
 mean(a[[1]])
 
-#Replace = TRUE because if FALSE we do not have enough individuals for 99 samples of 30.
+#This only gives the mean from the first subset (out of the 99). I tried the "[[1:99]]" structure but it did not work either.
 
-#No sé si vale porque quizá la media cambia cada vez que haes "mean()".
+#I could not answer the remaining questions because I did not obtain the means or the standard variation. I will wait to peer commentary to see if my partners can help me with this (really annoying) problem :)
 
 ```
+
+
 
