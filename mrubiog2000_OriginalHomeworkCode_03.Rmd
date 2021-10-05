@@ -15,7 +15,6 @@ library(curl)
 
 f <- f <- curl("https://raw.githubusercontent.com/fuzzyatelin/fuzzyatelin.github.io/master/AN588_Fall21/zombies.csv")
 d <- read.csv(f, header = TRUE, sep = ",", stringsAsFactors = FALSE)
-d
 head(d)
 
 ```
@@ -27,7 +26,12 @@ summary(d) #With "summary()" I can see the mean of every quantitative value from
 
 attach(d) #Used to be able to call the variables from the data frame.
 names(d) #To see the names of the columns (variables) I need to work with.
-mean(height) #Another way to do it If wanted to see the mean from a specific column (variable).
+mean(height)
+mean(weight)
+mean(zombies_killed)
+mean(years_of_education)
+mean(age)
+#Another way to do it If wanted to see the mean from a specific column (variable).
 
 ssq <- function(x) {sum((x-mean(x))^2)} #Function to calculate the sum of squares.
 pop_var <- function(x) {ssq(x)/length(x)} #Function to calculate the variance of the population (note it is divided by "n" instead of by "n-1")
@@ -224,5 +228,12 @@ mean(a[[1]])
 
 ```
 
+```{r}
+#PROBLEM 1: Calculating the IC for Poisson distribution. I did not understand why I had to use a different method from the Normal distribution. "SOLUTION" The way I discovered in Google worked (I think) but I did not fully understood it.
 
+#PROBLEM 2: It was hard to find a function to draw all the plots at the same time. SOLUTION: I googled it and finally discovered one.
+
+#PROBLEM 3: I was not able to finish Question number 6. I do not know how to apply different functions within the same loop or applying a function to only specific variables to a generated sample from a loop (or just selecting them).
+
+```
 
