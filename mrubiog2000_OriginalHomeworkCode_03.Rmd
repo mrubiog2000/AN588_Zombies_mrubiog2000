@@ -178,3 +178,34 @@ IC_Poisson(sam1$years_of_education)
 
 ```
 
+QUESTION 6
+
+```{r}
+
+library(dplyr)
+
+h <- NULL
+w <- NULL
+z <- NULL
+y <- NULL
+a <- NULL
+
+set.seed(1)
+for (i in 1:99) { h[[i]] <- sample(d$height, size = 30, replace = TRUE) }
+for (i in 1:99) { w[[i]] <- sample(d$weight, size = 30, replace = TRUE) }
+for (i in 1:99) { z[[i]] <- sample(d$zombies_killed, size = 30, replace = TRUE) }
+for (i in 1:99) { y[[i]] <- sample(d$years_of_education, size = 30, replace = TRUE) }
+for (i in 1:99) { a[[i]] <- sample(d$age, size = 30, replace = TRUE) }
+
+mean(h[[1]])
+mean(w[[1]])
+mean(z[[1]])
+mean(y[[1]])
+mean(a[[1]])
+
+#Replace = TRUE because if FALSE we do not have enough individuals for 99 samples of 30.
+
+#No sé si vale porque quizá la media cambia cada vez que haes "mean()".
+
+```
+
