@@ -46,6 +46,7 @@ pop_sd(age)
 #I have calculate the standard deviation of each numeric parameter of the population with the function above. I do not know if there is any function/way to directly apply a function only to numeric values from a data frame, so I did it individually.
 
 ```
+NK: I had a similar question about applying functions to only numeric values. I don't have the answer, but I ended just selecting the quantitative values from the data frame using select() and then working with the new data frame. However, from a statistical standpoint, I'm not certain I used the correct sd calculations. 
 
 QUESTION 2
 
@@ -67,6 +68,7 @@ grid.arrange(weight_plot, height_plot, zombies_plot, yearsedu_plot, age_plot, nc
 #function used to draw multiple plots ("par()" function did not work).
 
 ```
+NK: for some reason grid.arrange() doesn't work for me, but otherwise we had the same approach here. 
 
 ```{r}
 #This is an idea I tried first but did not work. Anyways, I think the structure may be useful (selecting only "female" and "male" data from the data frame).
@@ -125,6 +127,7 @@ qqline(d$age, col = "red")
 #I would say that the distributions of "Zombies killed" and "Years of education" are not normal because the data in the Q-Q plot does not match with the line. The shape of their distribution matches with the Poisson distribution (and it seems logic because they are discrete variables that are counted)
 
 ```
+NK: We came to the same conclusion, although I forgot to comment on which common distribution the data matches. This makes sense though.
 
 QUESTION 5
 
@@ -181,6 +184,7 @@ IC_Poisson(sam1$years_of_education)
 #CI for variables that follow the Poisson's distribution.
 
 ```
+NK: I used bootstrapping rather than the Poisson, which gave me a slightly narrower confidence interval. I'm not sure what this says about my method, but our answers are otherwise similar. 
 
 QUESTION 6
 
@@ -227,6 +231,7 @@ mean(a[[1]])
 #I could not answer the remaining questions because I did not obtain the means or the standard variation. I will wait to peer commentary to see if my partners can help me with this (really annoying) problem :)
 
 ```
+NK: I included the mean calculation in my for loop so the new data frames were just vectors of the 99 means. Then I used mean() and sd() on those data sets.
 
 ```{r}
 #PROBLEM 1: Calculating the IC for Poisson distribution. I did not understand why I had to use a different method from the Normal distribution. "SOLUTION" The way I discovered in Google worked (I think) but I did not fully understood it.
