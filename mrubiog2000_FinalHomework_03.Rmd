@@ -1,0 +1,231 @@
+---
+title: "mrubiog2000_FinalHomework_03"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+library(curl)
+
+f <- f <- curl("https://raw.githubusercontent.com/fuzzyatelin/fuzzyatelin.github.io/master/AN588_Fall21/zombies.csv")
+
+d <- read.csv(f, header = TRUE, sep = ",", stringsAsFactors = FALSE)
+```
+
+```{r}
+library(tidyverse)
+library(ggplot2)
+library(gridExtra) #Package that allows drawing multiple ggplot plots
+library(dplyr)
+```
+
+
+QUESTION 1. Calculate the population mean and standard deviation for each quantitative random variable (height, weight, age, number of zombies killed, and years of education). NOTE: You will not want to use the built in var() and sd() commands as these are for samples.
+
+```{r}
+library(tidyverse)
+
+summary(d) #With "summary()" I can see the mean of every quantitative value from the whole population.
+
+variables <- select(d, "height", "weight", "zombies_killed", "years_of_education", "age")
+#New data frame that only contains the variables selected: the quantitative variables. (@nkelly's idea).
+
+ssq <- function(x) {sum((x-mean(x))^2)} #Function to calculate the sum of squares.
+
+pop_var <- function(x) {ssq(x)/length(x)} #Function to calculate the variance of the population (note it is divided by "n" instead of by "n-1").
+
+pop_sd <- function(x) {sqrt(pop_var(x))} #Function to calculate the standard deviation of the population.
+
+cbind(mean = apply(variables, 2, mean), population_sd = apply(variables, 2, pop_sd))
+#"cbind" combines vector, matrix or data frames by columns or rows respectively.
+#"apply" return a vector, list or array in which a specific function has been applied. "2" indicates columns ("1" indicates rows) (@nkelley's idea).
+
+```
+
+
+QUESTION 2. Use {ggplot} to make boxplots of each of these variables by gender.
+
+```{r}
+
+library(ggplot2)
+library(gridExtra) #Package that allows drawing multiple ggplot plots
+
+weight_plot <- ggplot(data = d, aes(x = gender, y = weight)) + geom_boxplot()
+height_plot <- ggplot(data = d, aes(x = gender, y = height)) + geom_boxplot()
+zombies_plot <- ggplot(data = d, aes(x = gender, y = zombies_killed)) + geom_boxplot()
+yearsedu_plot <- ggplot(data = d, aes(x = gender, y = years_of_education)) + geom_boxplot()
+age_plot <- ggplot(data = d, aes(x = gender, y = age)) + geom_boxplot()
+
+#Boxplots with gender (x axis) and quantitative variables (y axis)
+
+grid.arrange(weight_plot, height_plot, zombies_plot, yearsedu_plot, age_plot, ncol=3)
+
+#function used to draw multiple plots ("par()" function did not work).
+
+```
+
+
+QUESTION 3. Use {ggplot} to make scatterplots of height and weight in relation to age. Do these variables seem to be related? In what way?
+
+```{r}
+
+age_height_plot <- ggplot(data = d, aes(x = age, y = height, color = factor(gender))) + geom_point() + theme(legend.position = "bottom")
+
+age_weight_plot <- ggplot(data = d, aes(x = age, y = weight, color = factor(gender))) + geom_point() + theme(legend.position = "bottom")
+#"color = factor(___)" to color the differently the chosen variable. In this case "gender" that has 2 possibles outcomes: "male" or "female" (@aer13's idea).
+#"theme" function to move the color legend (male-female) and add a title.
+
+grid.arrange(age_height_plot, age_weight_plot, ncol = 2)
+
+#These variables (age-height, age-weight) might be related in a proportional way (they in/decrease at the same time), but in the age-weight plot there is more dispersion.
+
+```
+
+
+QUESTION 4. Using histograms and Q-Q plots, check whether the quantitative variables seem to be drawn from a normal distribution. Which seem to be and which do not (hint: not all are drawn from the normal distribution)? For those that are not normal, can you determine from which common distribution they are drawn?
+
+```{r}
+par(mfrow=c(2,5)) #Used to draw all the plots at the same time (in 2 rows and 5 columns)
+
+hist(d$height, breaks = seq(from = 54, to = 81, by = 1), col = "light green", main = "Height")
+hist(d$weight, col = "light green", main = "weight")
+hist(d$zombies_killed, col = "red", main = "Zombies killed")
+hist(d$years_of_education, col = "light blue", main = "Years of education")
+hist(d$age, col = "light blue", main = "Age")
+
+#Histograms of each quantitative variable
+
+qqnorm(d$height, main = "Height Q-Q")
+qqline(d$height, col = "red")
+
+qqnorm(d$weight, main = "Weight Q-Q")
+qqline(d$weight, col = "red")
+
+qqnorm(d$zombies_killed, main = "Zombies killed Q-Q")
+qqline(d$zombies_killed, col = "red")
+
+qqnorm(d$years_of_education, main = "Years of education Q-Q")
+qqline(d$years_of_education, col = "red")
+
+qqnorm(d$age, main = "Age Q-Q")
+qqline(d$age, col = "red")
+
+#Q-Q plot of each quantitative variable
+
+#I would say that the distributions of "Zombies killed" and "Years of education" are not normal because the data in the Q-Q plot does not match with the line. The shape of their distribution matches with the Poisson distribution (and it seems logic because they are discrete variables that are counted)
+
+```
+
+
+QUESTION 5. Now use the sample() function to sample ONE subset of 30 zombie survivors (without replacement) from this population and calculate the mean and sample standard deviation for each variable. Also estimate the standard error for each variable, and construct the 95% confidence interval for each mean. Note that for the variables that are not drawn from the normal distribution, you may need to base your estimate of the CIs on slightly different code than for the normal…
+
+```{r}
+library(dplyr)
+
+set.seed(1) #Used to return the same set of random numbers every time I run the code.
+
+sam1 <- sample_n(d, 30, replace = FALSE) #"Sample_n" function from "dplyr" package allow to randomly select samples from a data frame. I tried to use the "Sample" but id did not work.
+
+sam_variables <- select(sam1, "height", "weight", "zombies_killed", "years_of_education", "age")
+
+se <- function(x) {sd(x)/sqrt(length(x))} #Function to calculate the standard error.
+
+cbind(mean = apply(sam_variables, 2, mean), sd = apply(sam_variables, 2, sd), se = apply(sam_variables, 2, se))
+#Calculation of mean, sd and standard error for each quantitative variable of the sample.
+#Standard Deviations. I think this time we can use the "sd()" function because we are studying a sample. In QUESTION 1 I think we could not because we were studying the whole population.
+
+quantile(sam1$height, c(0.025, 0.975)) 
+quantile(sam1$weight, c(0.025, 0.975))
+quantile(sam1$age, c(0.025, 0.975)) 
+
+#CI for variables that follow the normal distribution.
+
+IC_Poisson <- function(x) {
+  upper = mean(x) + (1 + 0.05/2 * se(x))
+  lower = mean(x) - (1 - 0.05/2 * se(x))
+  ci <- c(lower, upper)
+  return(ci)
+  }
+
+#Function to calculate the IC for a variable that follows Poisson's distribution.
+
+  #mean(x) = lambda from Poisson's distribution.
+  #This IC can be calculated by multiplying the standard error (se).
+  #The critical value is 0.05 (α).
+
+IC_Poisson(sam1$zombies_killed)
+IC_Poisson(sam1$years_of_education)
+
+#CI for variables that follow the Poisson's distribution.
+
+```
+
+
+QUESTION 6. Now draw 99 more random samples of 30 zombie apocalypse survivors, and calculate the mean for each variable for each of these samples.
+  Together with the first sample you drew, you now have a set of 100 means for each variable (each based on 30 observations), which constitutes a sampling distribution for each variable. What are the means and standard deviations of this distribution of means for each variable? How do the standard deviations of means compare to the standard errors estimated in [5]?
+  What do these sampling distributions look like (a graph might help here)? Are they normally distributed? What about for those variables that you concluded were not originally drawn from a normal distribution?
+
+```{r}
+
+height_sam <- NULL
+set.seed(1)
+for (i in 1:99) {height_sam[i] <- mean(sample(d$height, size = 30, replace = FALSE))}
+mean(height_sam)
+sd(height_sam)
+
+weight_sam <- NULL
+set.seed(1)
+for (i in 1:99) {weight_sam[i] <- mean(sample(d$weight, size = 30, replace = FALSE))}
+mean(weight_sam)
+sd(weight_sam)
+
+zombies_sam <- NULL
+set.seed(1)
+for (i in 1:99) {zombies_sam[i] <- mean(sample(d$zombies_killed, size = 30, replace = FALSE))}
+mean(zombies_sam)
+sd(zombies_sam)
+
+years_sam <- NULL
+set.seed(1)
+for (i in 1:99) {years_sam[i] <- mean(sample(d$years_of_education, size = 30, replace = FALSE))}
+mean(years_sam)
+sd(years_sam)
+
+age_sam <- NULL
+set.seed(1)
+for (i in 1:99) {age_sam[i] <- mean(sample(d$age, size = 30, replace = FALSE))}
+mean(age_sam)
+sd(age_sam)
+
+#5 "for loops" that calculate the mean of the 99 samples; each one contains 30 values from the quantitative variables from the zombie survivors.
+#The mean and sd are calculated for each loop.
+
+##The standard deviation from the variable's loop distribution are quite similar to the standard error from the variable's 1 sampled-distribution.
+
+par(mfrow=c(1, 5))
+hist(height_sam)
+hist(weight_sam)
+hist(zombies_sam)
+hist(years_sam)
+hist(age_sam)
+
+##All distribution seem to be normal, even the ones which at first looked Poisson. This is because we are setting a distribution for the means of the values instead of the values themselves.
+
+```
+
+
+```{r}
+#PROBLEM 1: Calculating the IC for Poisson distribution. I did not understand why I had to use a different method from the Normal distribution. "SOLUTION" The way I discovered in Google worked (I think) but I did not fully understood it.
+
+#PROBLEM 2: It was hard to find a function to draw all the plots at the same time. SOLUTION: I googled it and finally discovered one.
+
+#PROBLEM 3: I was not able to finish Question number 6. I do not know how to apply different functions within the same loop or applying a function to only specific variables to a generated sample from a loop (or just selecting them).
+
+```
+
