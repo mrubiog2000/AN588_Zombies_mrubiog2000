@@ -48,6 +48,7 @@ cbind(mean = apply(variables, 2, mean), population_sd = apply(variables, 2, pop_
 
 ```
 
+*Nice! Good use of using select and cbind, very clean result*
 
 QUESTION 2. Use {ggplot} to make boxplots of each of these variables by gender.
 
@@ -229,3 +230,4 @@ hist(age_sam)
 
 ```
 
+*For problem 1: you can either bootstrap the selection and use the same method to find CI, or, if you believe it is a poisson distribution, use qpois()*  
